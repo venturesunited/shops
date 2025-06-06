@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en" data-color-scheme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="container">
+                <h1 class="dashboard-title">Business Dashboard</h1>
+                <div class="header-metrics">
+                    <div class="metric-card">
+                        <span class="metric-label">Revenue Today</span>
+                        <span class="metric-value" id="totalRevenue">€14,975</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Ad Spend</span>
+                        <span class="metric-value" id="totalAdSpend">€3,550</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Projected Profit</span>
+                        <span class="metric-value success" id="totalProfit">€6,933</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Outstanding Dividends</span>
+                        <span class="metric-value warning" id="totalDividends">€234</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="dashboard-nav">
+            <div class="container">
+                <div class="nav-tabs">
+                    <button class="nav-tab active" data-tab="overview">Overview</button>
+                    <button class="nav-tab" data-tab="agencies">Agency Management</button>
+                    <button class="nav-tab" data-tab="webshops">Webshop Tracking</button>
+                    <button class="nav-tab" data-tab="reconciliation">Financial Reconciliation</button>
+                    <button class="nav-tab" data-tab="dividends">Partner Dividends</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <div class="container">
+                <!-- Overview Tab -->
+                <div class="tab-content active" id="overview-tab">
+                    <div class="overview-grid">
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>Agency Balance Alerts</h3>
+                                <div id="agencyAlerts"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>Webshop Performance</h3>
+                                <div id="webshopGrid"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>Recent Payouts</h3>
+                                <div id="recentPayouts"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>Revenue Trend</h3>
+                                <canvas id="revenueChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agency Management Tab -->
+                <div class="tab-content" id="agencies-tab">
+                    <div class="tab-header">
+                        <h2>Agency Management</h2>
+                        <button class="btn btn--primary" onclick="openTopupModal()">Add Topup</button>
+                    </div>
+                    <div class="card">
+                        <div class="card__body">
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Agency Name</th>
+                                            <th>Ad Account ID</th>
+                                            <th>Current Balance</th>
+                                            <th>Daily Burn</th>
+                                            <th>Days Remaining</th>
+                                            <th>Last Topup</th>
+                                            <th>Topup Amount</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="agencyTable"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Webshop Tracking Tab -->
+                <div class="tab-content" id="webshops-tab">
+                    <div class="webshop-tabs">
+                        <div class="webshop-nav">
+                            <button class="webshop-tab active" data-webshop="Vanhouten SP">Vanhouten SP</button>
+                            <button class="webshop-tab" data-webshop="Koophoek SP">Koophoek SP</button>
+                            <button class="webshop-tab" data-webshop="Vermeeren SP">Vermeeren SP</button>
+                            <button class="webshop-tab" data-webshop="Winkeloutlet SP">Winkeloutlet SP</button>
+                        </div>
+                        <button class="btn btn--primary" onclick="openEntryModal()">Add Entry</button>
+                    </div>
+                    
+                    <div id="webshopData" class="card">
+                        <div class="card__body">
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Ad Spend</th>
+                                            <th>Revenue</th>
+                                            <th>Orders</th>
+                                            <th>COGS</th>
+                                            <th>ROAS</th>
+                                            <th>Projected Profit</th>
+                                            <th>Actual Payout</th>
+                                            <th>Payout Date</th>
+                                            <th>Bank Account</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="webshopTable"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Reconciliation Tab -->
+                <div class="tab-content" id="reconciliation-tab">
+                    <div class="tab-header">
+                        <h2>Financial Reconciliation</h2>
+                    </div>
+                    <div class="card">
+                        <div class="card__body">
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Webshop</th>
+                                            <th>Amount</th>
+                                            <th>Bank Account</th>
+                                            <th>Crypto Converted</th>
+                                            <th>Total Dividend</th>
+                                            <th>Partner 1 (40%)</th>
+                                            <th>Partner 2 (60%)</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="reconciliationTable"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Partner Dividends Tab -->
+                <div class="tab-content" id="dividends-tab">
+                    <div class="tab-header">
+                        <h2>Partner Dividends</h2>
+                    </div>
+                    <div class="dividends-grid">
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>Partner 1 (40%)</h3>
+                                <div class="dividend-summary">
+                                    <div class="dividend-item">
+                                        <span>Total Earned:</span>
+                                        <span id="partner1Total">€295.20</span>
+                                    </div>
+                                    <div class="dividend-item">
+                                        <span>Outstanding:</span>
+                                        <span id="partner1Outstanding">€156.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>Partner 2 (60%)</h3>
+                                <div class="dividend-summary">
+                                    <div class="dividend-item">
+                                        <span>Total Earned:</span>
+                                        <span id="partner2Total">€442.80</span>
+                                    </div>
+                                    <div class="dividend-item">
+                                        <span>Outstanding:</span>
+                                        <span id="partner2Outstanding">€234.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Payment History</h3>
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Webshop</th>
+                                            <th>Partner 1</th>
+                                            <th>Partner 2</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dividendsTable"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Topup Modal -->
+    <div id="topupModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Agency Topup</h3>
+                <button class="modal-close" onclick="closeTopupModal()">&times;</button>
+            </div>
+            <form id="topupForm">
+                <div class="form-group">
+                    <label class="form-label">Agency</label>
+                    <select class="form-control" id="topupAgency" required>
+                        <option value="">Select Agency</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ad Account ID</label>
+                    <select class="form-control" id="topupAccount" required>
+                        <option value="">Select Ad Account</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Topup Amount</label>
+                    <input type="number" class="form-control" id="topupAmount" required min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date</label>
+                    <input type="date" class="form-control" id="topupDate" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn--secondary" onclick="closeTopupModal()">Cancel</button>
+                    <button type="submit" class="btn btn--primary">Add Topup</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Entry Modal -->
+    <div id="entryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Webshop Entry</h3>
+                <button class="modal-close" onclick="closeEntryModal()">&times;</button>
+            </div>
+            <form id="entryForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Date</label>
+                        <input type="date" class="form-control" id="entryDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ad Spend</label>
+                        <input type="number" class="form-control" id="entryAdSpend" required min="0" step="0.01">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Revenue</label>
+                        <input type="number" class="form-control" id="entryRevenue" required min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Orders</label>
+                        <input type="number" class="form-control" id="entryOrders" required min="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">COGS</label>
+                        <input type="number" class="form-control" id="entryCogs" required min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bank Account</label>
+                        <select class="form-control" id="entryBankAccount" required>
+                            <option value="">Select Bank Account</option>
+                            <option value="ING NL">ING NL</option>
+                            <option value="Rabobank">Rabobank</option>
+                            <option value="ABN AMRO">ABN AMRO</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn--secondary" onclick="closeEntryModal()">Cancel</button>
+                    <button type="submit" class="btn btn--primary">Add Entry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
