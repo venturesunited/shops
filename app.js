@@ -69,6 +69,10 @@ let appData = {
 
 let currentWebshop = "Vanhouten SP";
 let revenueChart = null;
+let dateRange = {
+  start: new Date('2025-05-24'),
+  end: new Date('2025-06-06')
+};
 
 // Utility functions
 function formatCurrency(amount) {
@@ -103,15 +107,13 @@ function calculateTotalMetrics() {
   let totalAdSpend = 0;
   let totalProjectedProfit = 0;
   
-  const today = '2025-06-05';
-  
   appData.webshops.forEach(webshop => {
-    const todayData = webshop.dailyData.find(data => data.date === today);
-    if (todayData) {
-      totalRevenue += todayData.revenue;
-      totalAdSpend += todayData.adSpend;
-      totalProjectedProfit += todayData.projectedProfit;
-    }
+    const filteredData = filterDataByDateRange(webshop.dailyData);
+    filteredData.forEach(data => {
+      totalRevenue += data.revenue;
+      totalAdSpend += data.adSpend;
+      totalProjectedProfit += data.projectedProfit;
+    });
   });
   
   const totalOutstandingDividends = appData.payouts
@@ -129,12 +131,8 @@ function calculateTotalMetrics() {
 // Initialize application
 document.addEventListener('DOMContentLoaded', function() {
   initializeTabs();
-  updateHeaderMetrics();
-  renderOverview();
-  renderAgencyTable();
-  renderWebshopData();
-  renderReconciliationTable();
-  renderDividendsData();
+  initializeDateRangePicker();
+  updateDashboardData();
   setupModals();
 });
 
@@ -170,6 +168,218 @@ function initializeTabs() {
       // Update webshop data
       renderWebshopData();
     });
+  });
+}
+
+// Initialize date range picker
+function initializeDateRangePicker() {
+  const dateRangeBtn = document.getElementById('dateRangeBtn');
+  const dateRangeText = dateRangeBtn.querySelector('.date-range-text');
+  
+  const fp = flatpickr(dateRangeBtn, {
+    mode: "range",
+    dateFormat: "Y-m-d",
+    defaultDate: [dateRange.start, dateRange.end],
+    showMonths: 2,
+    inline: false,
+    appendTo: document.body,
+    onChange: function(selectedDates) {
+      if (selectedDates.length === 2) {
+        dateRange.start = selectedDates[0];
+        dateRange.end = selectedDates[1];
+        dateRangeText.textContent = formatDateRange(dateRange.start, dateRange.end);
+      }
+    },
+    onReady: function(selectedDates, dateStr, instance) {
+      // Create sidebar with preset groups
+      const sidebar = document.createElement('div');
+      sidebar.className = 'flatpickr-preset-sidebar';
+      
+      const presetGroups = [
+        {
+          title: 'Common',
+          presets: [
+            { label: 'Today', getDates: () => [new Date(), new Date()] },
+            { label: 'Yesterday', getDates: () => {
+              const yesterday = new Date();
+              yesterday.setDate(yesterday.getDate() - 1);
+              return [yesterday, yesterday];
+            }},
+            { label: 'This Week', getDates: () => {
+              const today = new Date();
+              const start = new Date(today);
+              start.setDate(today.getDate() - today.getDay());
+              const end = new Date(start);
+              end.setDate(start.getDate() + 6);
+              return [start, end];
+            }},
+            { label: 'This Month', getDates: () => {
+              const today = new Date();
+              const start = new Date(today.getFullYear(), today.getMonth(), 1);
+              const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+              return [start, end];
+            }},
+            { label: 'This Year', getDates: () => {
+              const today = new Date();
+              const start = new Date(today.getFullYear(), 0, 1);
+              const end = new Date(today.getFullYear(), 11, 31);
+              return [start, end];
+            }}
+          ]
+        },
+        {
+          title: 'Previous Periods',
+          presets: [
+            { label: 'Last Week', getDates: () => {
+              const today = new Date();
+              const end = new Date(today);
+              end.setDate(today.getDate() - today.getDay() - 1);
+              const start = new Date(end);
+              start.setDate(end.getDate() - 6);
+              return [start, end];
+            }},
+            { label: 'Last Month', getDates: () => {
+              const today = new Date();
+              const start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+              const end = new Date(today.getFullYear(), today.getMonth(), 0);
+              return [start, end];
+            }},
+            { label: 'Last Year', getDates: () => {
+              const today = new Date();
+              const start = new Date(today.getFullYear() - 1, 0, 1);
+              const end = new Date(today.getFullYear() - 1, 11, 31);
+              return [start, end];
+            }}
+          ]
+        },
+        {
+          title: 'Quarters',
+          presets: [
+            { label: 'Q1', getDates: () => {
+              const today = new Date();
+              const start = new Date(today.getFullYear(), 0, 1);
+              const end = new Date(today.getFullYear(), 2, 31);
+              return [start, end];
+            }},
+            { label: 'Q2', getDates: () => {
+              const today = new Date();
+              const start = new Date(today.getFullYear(), 3, 1);
+              const end = new Date(today.getFullYear(), 5, 30);
+              return [start, end];
+            }}
+          ]
+        },
+        {
+          title: 'Custom Ranges',
+          presets: [
+            { label: 'Last 7 Days', getDates: () => {
+              const end = new Date();
+              const start = new Date();
+              start.setDate(end.getDate() - 6);
+              return [start, end];
+            }},
+            { label: 'Last 30 Days', getDates: () => {
+              const end = new Date();
+              const start = new Date();
+              start.setDate(end.getDate() - 29);
+              return [start, end];
+            }},
+            { label: 'Last 90 Days', getDates: () => {
+              const end = new Date();
+              const start = new Date();
+              start.setDate(end.getDate() - 89);
+              return [start, end];
+            }},
+            { label: 'Last 12 Months', getDates: () => {
+              const end = new Date();
+              const start = new Date();
+              start.setMonth(end.getMonth() - 11);
+              start.setDate(1);
+              return [start, end];
+            }},
+            { label: 'Last 24 Months', getDates: () => {
+              const end = new Date();
+              const start = new Date();
+              start.setMonth(end.getMonth() - 23);
+              start.setDate(1);
+              return [start, end];
+            }}
+          ]
+        }
+      ];
+      
+      // Create preset groups
+      presetGroups.forEach(group => {
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'flatpickr-preset-group';
+        
+        const groupTitle = document.createElement('div');
+        groupTitle.className = 'flatpickr-preset-group-title';
+        groupTitle.textContent = group.title;
+        groupDiv.appendChild(groupTitle);
+        
+        group.presets.forEach(preset => {
+          const button = document.createElement('button');
+          button.className = 'flatpickr-preset-btn';
+          button.textContent = preset.label;
+          button.addEventListener('click', () => {
+            const dates = preset.getDates();
+            instance.setDate(dates);
+            dateRange.start = dates[0];
+            dateRange.end = dates[1];
+            dateRangeText.textContent = formatDateRange(dates[0], dates[1]);
+            
+            // Update active state
+            document.querySelectorAll('.flatpickr-preset-btn').forEach(btn => {
+              btn.classList.remove('active');
+            });
+            button.classList.add('active');
+          });
+          groupDiv.appendChild(button);
+        });
+        
+        sidebar.appendChild(groupDiv);
+      });
+      
+      // Add apply button
+      const applyButton = document.createElement('button');
+      applyButton.className = 'flatpickr-apply-btn';
+      applyButton.textContent = 'Apply';
+      applyButton.addEventListener('click', () => {
+        updateDashboardData();
+        instance.close();
+      });
+      
+      // Insert sidebar and apply button
+      instance.calendarContainer.insertBefore(sidebar, instance.calendarContainer.firstChild);
+      instance.calendarContainer.appendChild(applyButton);
+      
+      // Set initial date range text
+      dateRangeText.textContent = formatDateRange(dateRange.start, dateRange.end);
+    }
+  });
+}
+
+// Format date range for display
+function formatDateRange(start, end) {
+  return `${formatDate(start.toISOString().split('T')[0])} - ${formatDate(end.toISOString().split('T')[0])}`;
+}
+
+// Update all dashboard data based on date range
+function updateDashboardData() {
+  updateHeaderMetrics();
+  renderAgencyTable();
+  renderWebshopData();
+  renderOverview();
+  renderReconciliationTable();
+  renderDividendsData();
+}
+
+// Filter data by date range
+function filterDataByDateRange(data) {
+  return data.filter(item => {
+    const itemDate = new Date(item.date);
+    return itemDate >= dateRange.start && itemDate <= dateRange.end;
   });
 }
 
@@ -283,15 +493,14 @@ function renderRevenueChart() {
     revenueChart.destroy();
   }
   
-  // Get last 7 days of data
+  // Get data points within date range
   const dates = [];
   const revenues = [];
   const adSpends = [];
   
-  for (let i = 6; i >= 0; i--) {
-    const date = new Date('2025-06-05');
-    date.setDate(date.getDate() - i);
-    const dateString = date.toISOString().split('T')[0];
+  const currentDate = new Date(dateRange.start);
+  while (currentDate <= dateRange.end) {
+    const dateString = currentDate.toISOString().split('T')[0];
     dates.push(formatDate(dateString));
     
     let dayRevenue = 0;
@@ -307,6 +516,8 @@ function renderRevenueChart() {
     
     revenues.push(dayRevenue);
     adSpends.push(dayAdSpend);
+    
+    currentDate.setDate(currentDate.getDate() + 1);
   }
   
   revenueChart = new Chart(ctx, {
@@ -378,6 +589,10 @@ function renderAgencyTable() {
               ${daysRemaining < 3 ? 'Critical' : daysRemaining < 7 ? 'Warning' : 'Good'}
             </span>
           </td>
+          <td>
+            <button class="action-btn primary" onclick="editAgencyTopup('${agency.name}', '${account.id}')">Edit</button>
+            <button class="action-btn danger" onclick="deleteAgencyTopup('${agency.name}', '${account.id}')">Delete</button>
+          </td>
         </tr>
       `;
     });
@@ -393,7 +608,8 @@ function renderWebshopData() {
   let html = '';
   
   if (webshop) {
-    webshop.dailyData.forEach(data => {
+    const filteredData = filterDataByDateRange(webshop.dailyData);
+    filteredData.forEach((data, index) => {
       const roas = calculateRoas(data.revenue, data.adSpend);
       const payoutStatus = data.actualPayout > 0 ? 'Paid' : 'Pending';
       
@@ -409,6 +625,10 @@ function renderWebshopData() {
           <td>${data.actualPayout > 0 ? formatCurrency(data.actualPayout) : 'Pending'}</td>
           <td>${formatDate(data.payoutDate)}</td>
           <td>${data.bankAccount}</td>
+          <td>
+            <button class="action-btn primary" onclick="editWebshopEntry('${currentWebshop}', ${index})">Edit</button>
+            <button class="action-btn danger" onclick="deleteWebshopEntry('${currentWebshop}', ${index})">Delete</button>
+          </td>
         </tr>
       `;
     });
@@ -599,7 +819,15 @@ document.getElementById('entryForm').addEventListener('submit', function(e) {
   // Add to current webshop
   const webshop = appData.webshops.find(w => w.name === currentWebshop);
   if (webshop) {
-    webshop.dailyData.unshift(newEntry);
+    const editIndex = this.dataset.editIndex;
+    if (editIndex !== undefined) {
+      // Update existing entry
+      webshop.dailyData[editIndex] = newEntry;
+      delete this.dataset.editIndex;
+    } else {
+      // Add new entry
+      webshop.dailyData.unshift(newEntry);
+    }
     
     // Refresh displays
     renderWebshopData();
@@ -623,3 +851,77 @@ window.addEventListener('click', function(e) {
     e.target.classList.remove('active');
   }
 });
+
+// Agency management functions
+function editAgencyTopup(agencyName, accountId) {
+  const agency = appData.agencies.find(a => a.name === agencyName);
+  if (!agency) return;
+  
+  const account = agency.adAccounts.find(a => a.id === accountId);
+  if (!account) return;
+  
+  // Populate the topup modal with existing data
+  document.getElementById('topupAgency').value = agencyName;
+  updateAccountDropdown();
+  document.getElementById('topupAccount').value = accountId;
+  document.getElementById('topupAmount').value = account.topupAmount;
+  document.getElementById('topupDate').value = account.lastTopup;
+  
+  // Open the modal
+  openTopupModal();
+}
+
+function deleteAgencyTopup(agencyName, accountId) {
+  if (!confirm('Are you sure you want to delete this topup?')) return;
+  
+  const agency = appData.agencies.find(a => a.name === agencyName);
+  if (!agency) return;
+  
+  const accountIndex = agency.adAccounts.findIndex(a => a.id === accountId);
+  if (accountIndex === -1) return;
+  
+  // Remove the account
+  agency.adAccounts.splice(accountIndex, 1);
+  
+  // Refresh displays
+  renderAgencyTable();
+  renderOverview();
+  updateHeaderMetrics();
+}
+
+// Webshop management functions
+function editWebshopEntry(webshopName, entryIndex) {
+  const webshop = appData.webshops.find(w => w.name === webshopName);
+  if (!webshop || !webshop.dailyData[entryIndex]) return;
+  
+  const entry = webshop.dailyData[entryIndex];
+  
+  // Populate the entry modal with existing data
+  document.getElementById('entryDate').value = entry.date;
+  document.getElementById('entryAdSpend').value = entry.adSpend;
+  document.getElementById('entryRevenue').value = entry.revenue;
+  document.getElementById('entryOrders').value = entry.orders;
+  document.getElementById('entryCogs').value = entry.cogs;
+  document.getElementById('entryBankAccount').value = entry.bankAccount;
+  
+  // Store the entry index for updating
+  document.getElementById('entryForm').dataset.editIndex = entryIndex;
+  
+  // Open the modal
+  openEntryModal();
+}
+
+function deleteWebshopEntry(webshopName, entryIndex) {
+  if (!confirm('Are you sure you want to delete this entry?')) return;
+  
+  const webshop = appData.webshops.find(w => w.name === webshopName);
+  if (!webshop) return;
+  
+  // Remove the entry
+  webshop.dailyData.splice(entryIndex, 1);
+  
+  // Refresh displays
+  renderWebshopData();
+  renderOverview();
+  updateHeaderMetrics();
+}

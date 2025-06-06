@@ -1,4 +1,3 @@
-
 :root {
   /* Colors */
   --color-background: rgba(252, 252, 249, 1);
@@ -663,17 +662,208 @@ select.form-control {
 .dashboard-header {
   background-color: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
-  padding: var(--space-16) 0;
-  box-shadow: var(--shadow-sm);
+  padding: var(--space-24) 0;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-24);
 }
 
 .dashboard-title {
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
-  margin-bottom: var(--space-16);
+  margin: 0;
+  font-size: var(--font-size-2xl);
   color: var(--color-text);
 }
 
+.date-range-picker {
+  position: relative;
+}
+
+.date-range-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-8) var(--space-16);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-base);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-standard);
+}
+
+.date-range-btn:hover {
+  background-color: var(--color-secondary);
+  border-color: var(--color-border-hover);
+}
+
+.date-range-icon {
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+.date-range-btn:hover .date-range-icon {
+  transform: rotate(180deg);
+}
+
+/* Flatpickr customization */
+.flatpickr-calendar {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 0;
+  width: 720px;
+  display: flex;
+  font-family: var(--font-family);
+}
+
+.flatpickr-calendar .flatpickr-months {
+  padding: 16px;
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.flatpickr-calendar .flatpickr-month {
+  background-color: transparent;
+  color: #111827;
+  height: 40px;
+}
+
+.flatpickr-calendar .flatpickr-current-month {
+  font-size: 16px;
+  font-weight: 600;
+  padding: 0;
+}
+
+.flatpickr-calendar .flatpickr-weekday {
+  color: #6B7280;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.flatpickr-calendar .flatpickr-day {
+  color: #111827;
+  border-radius: 6px;
+  margin: 2px;
+  height: 36px;
+  line-height: 36px;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.flatpickr-calendar .flatpickr-day.selected {
+  background-color: #4F46E5;
+  border-color: #4F46E5;
+  color: #FFFFFF;
+  font-weight: 500;
+}
+
+.flatpickr-calendar .flatpickr-day.inRange {
+  background-color: rgba(79, 70, 229, 0.1);
+  border-color: transparent;
+  color: #111827;
+  box-shadow: none;
+}
+
+.flatpickr-calendar .flatpickr-day:hover {
+  background-color: #F3F4F6;
+}
+
+.flatpickr-calendar .flatpickr-day.today {
+  border-color: #4F46E5;
+  color: #4F46E5;
+  font-weight: 500;
+}
+
+.flatpickr-calendar .flatpickr-day.disabled {
+  color: #D1D5DB;
+}
+
+/* Preset sidebar */
+.flatpickr-preset-sidebar {
+  width: 200px;
+  background-color: #F9FAFB;
+  border-right: 1px solid #E5E7EB;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.flatpickr-preset-group {
+  margin-bottom: 16px;
+}
+
+.flatpickr-preset-group-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6B7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.flatpickr-preset-btn {
+  width: 100%;
+  padding: 8px 12px;
+  background-color: transparent;
+  border: none;
+  border-radius: 6px;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 400;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.flatpickr-preset-btn:hover {
+  background-color: #F3F4F6;
+  color: #111827;
+}
+
+.flatpickr-preset-btn.active {
+  background-color: #4F46E5;
+  color: #FFFFFF;
+  font-weight: 500;
+}
+
+/* Calendar container */
+.flatpickr-calendar-container {
+  flex: 1;
+  padding: 16px;
+  display: flex;
+  gap: 24px;
+}
+
+/* Apply button */
+.flatpickr-apply-btn {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  padding: 8px 16px;
+  background-color: #4F46E5;
+  border: none;
+  border-radius: 6px;
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.flatpickr-apply-btn:hover {
+  background-color: #4338CA;
+}
+
+/* Header metrics */
 .header-metrics {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -1111,27 +1301,35 @@ select.form-control {
 /* Action buttons */
 .action-btn {
   padding: var(--space-4) var(--space-8);
-  font-size: var(--font-size-xs);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-border);
-  background-color: var(--color-surface);
-  color: var(--color-text);
+  border: none;
+  border-radius: var(--radius-base);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: all var(--duration-fast) var(--ease-standard);
+  margin-right: var(--space-4);
 }
 
-.action-btn:hover {
-  background-color: var(--color-secondary);
+.action-btn:last-child {
+  margin-right: 0;
 }
 
 .action-btn.primary {
   background-color: var(--color-primary);
   color: var(--color-btn-primary-text);
-  border-color: var(--color-primary);
 }
 
 .action-btn.primary:hover {
   background-color: var(--color-primary-hover);
+}
+
+.action-btn.danger {
+  background-color: var(--color-error);
+  color: var(--color-btn-primary-text);
+}
+
+.action-btn.danger:hover {
+  background-color: var(--color-error-hover);
 }
 
 /* Responsive design */

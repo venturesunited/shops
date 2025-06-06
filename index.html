@@ -5,14 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Business Dashboard</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 <body>
     <div class="dashboard-container">
         <!-- Header -->
         <header class="dashboard-header">
             <div class="container">
-                <h1 class="dashboard-title">Business Dashboard - LIVE TEST</h1>
+                <div class="header-content">
+                    <h1 class="dashboard-title">Business Dashboard - LIVE TEST</h1>
+                    <div class="date-range-picker">
+                        <button class="date-range-btn" id="dateRangeBtn">
+                            <span class="date-range-text">May 24, 2025 - Jun 6, 2025</span>
+                            <svg class="date-range-icon" width="12" height="12" viewBox="0 0 12 12">
+                                <path d="M6 8.825L1.175 4 2.05 3.125 6 7.075 9.95 3.125 10.825 4 6 8.825z" fill="currentColor"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
                 <div class="header-metrics">
                     <div class="metric-card">
                         <span class="metric-label">Revenue Today</span>
@@ -103,6 +115,7 @@
                                             <th>Last Topup</th>
                                             <th>Topup Amount</th>
                                             <th>Status</th>
+                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="agencyTable"></tbody>
@@ -140,6 +153,7 @@
                                             <th>Actual Payout</th>
                                             <th>Payout Date</th>
                                             <th>Bank Account</th>
+                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="webshopTable"></tbody>
